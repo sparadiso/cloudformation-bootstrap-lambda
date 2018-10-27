@@ -7,6 +7,10 @@
     "BeanstalkArtifactKey": {
       "Type": "String",
       "Default": "beanstalk.zip"
+    },
+    "BootstrapLambdaArtifactKey": {
+      "Type": "String",
+      "Default": "lambda.zip"
     }
   },
   "Resources": {
@@ -46,6 +50,76 @@
           "Ref": "BeanstalkApplicationVersion"
         }
       }
+    },
+    "BootstrapLambdaRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "LambdaPolicy",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Sid": "Stmt1540627199072",
+                  "Action": "*",
+                  "Effect": "Allow",
+                  "Resource": "*"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "BootstrapLambda": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "BeanstalkS3Bucket"
+          },
+          "S3Key": {
+            "Ref": "BootstrapLambdaArtifactKey"
+          }
+        },
+        "Environment": {
+          "Variables": {
+            "BeanstalkEnv": {
+              "Ref": "BeanstalkEnvironment"
+            },
+            "QueueName": {
+              "Fn::GetAtt": [
+                "MyQueue",
+                "QueueName"
+              ]
+            }
+          }
+        },
+        "Handler": "lambda.main",
+        "Role": {
+          "Fn::GetAtt": [
+            "BootstrapLambdaRole",
+            "Arn"
+          ]
+        },
+        "Runtime": "python3.6"
+      }
+    },
+    "MyQueue": {
+      "Type": "AWS::SQS::Queue"
     }
   }
 }
