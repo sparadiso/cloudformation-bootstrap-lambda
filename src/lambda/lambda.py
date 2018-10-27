@@ -23,10 +23,7 @@ def __get_scaling_policies(asg_name):
     return (scale_up_policy, scale_down_policy)
 
 
-def main(event, context):
-    asg_name = __get_asg_name()
-    scale_up_policy, scale_down_policy = __get_scaling_policies(asg_name)
-
+def __create_alarms(scale_up_policy, scale_down_policy):
     cw_client.put_metric_alarm(
         AlarmName="SQS Messages Available",
         AlarmActions=[scale_up_policy["PolicyARN"]],
@@ -52,3 +49,12 @@ def main(event, context):
         ComparisonOperator="EqualToThreshold",
         Statistic="Maximum"
     )
+
+
+def main(event, context):
+    try:
+        asg_name = __get_asg_name()
+        scale_up_policy, scale_down_policy = __get_scaling_policies(asg_name)
+        __create_alarms(scale_up_policy, scale_down_policy)
+    except:
+        pass

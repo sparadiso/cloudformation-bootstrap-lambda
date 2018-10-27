@@ -120,6 +120,21 @@
     },
     "MyQueue": {
       "Type": "AWS::SQS::Queue"
+    },
+    "LambdaTrigger": {
+      "Type": "Custom::BootstrapLambdaTrigger",
+      "DependsOn": [
+        "BootstrapLambda",
+        "BeanstalkEnvironment"
+      ],
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "BootstrapLambda",
+            "Arn"
+          ]
+        }
+      }
     }
   }
 }
