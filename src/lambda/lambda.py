@@ -28,7 +28,7 @@ def main(event, context):
     scale_up_policy, scale_down_policy = __get_scaling_policies(asg_name)
 
     cw_client.put_metric_alarm(
-        AlarmName="MyAlarm",
+        AlarmName="SQS Messages Available",
         AlarmActions=[scale_up_policy["PolicyARN"]],
         MetricName="ApproximateNumberOfMessagesVisible",
         Namespace="AWS/SQS",
@@ -37,5 +37,18 @@ def main(event, context):
         EvaluationPeriods=1,
         Threshold=0,
         ComparisonOperator="GreaterThanThreshold",
+        Statistic="Maximum"
+    )
+
+    cw_client.put_metric_alarm(
+        AlarmName="No SQS messages available",
+        AlarmActions=[scale_down_policy["PolicyARN"]],
+        MetricName="ApproximateNumberOfMessagesVisible",
+        Namespace="AWS/SQS",
+        Dimensions=[{"Name": "QueueName", "Value": queue_name}],
+        Period=60,
+        EvaluationPeriods=5,
+        Threshold=0,
+        ComparisonOperator="EqualToThreshold",
         Statistic="Maximum"
     )
