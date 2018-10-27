@@ -1,0 +1,51 @@
+{
+  "Parameters": {
+    "BeanstalkS3Bucket": {
+      "Type": "String",
+      "Default": "spp-cf-artifacts"
+    },
+    "BeanstalkArtifactKey": {
+      "Type": "String",
+      "Default": "beanstalk.zip"
+    }
+  },
+  "Resources": {
+    "BeanstalkApplication": {
+      "Type": "AWS::ElasticBeanstalk::Application",
+      "Properties": {
+        "ApplicationName": "TestBeanstalkApp",
+        "Description": "Just a test beanstalk app"
+      }
+    },
+    "BeanstalkApplicationVersion": {
+      "Type": "AWS::ElasticBeanstalk::ApplicationVersion",
+      "Properties": {
+        "ApplicationName": {
+          "Ref": "BeanstalkApplication"
+        },
+        "SourceBundle": {
+          "S3Bucket": {
+            "Ref": "BeanstalkS3Bucket"
+          },
+          "S3Key": {
+            "Ref": "BeanstalkArtifactKey"
+          }
+        }
+      }
+    },
+    "BeanstalkEnvironment": {
+      "Type": "AWS::ElasticBeanstalk::Environment",
+      "Properties": {
+        "ApplicationName": {
+          "Ref": "BeanstalkApplication"
+        },
+        "Description": "Test beanstalk environment",
+        "EnvironmentName": "BeanstalkEnvironment",
+        "SolutionStackName": "64bit Amazon Linux running Python",
+        "VersionLabel": {
+          "Ref": "BeanstalkApplicationVersion"
+        }
+      }
+    }
+  }
+}
