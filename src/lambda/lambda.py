@@ -1,5 +1,6 @@
 import boto3
 import os
+import cfnresponse
 
 beanstalk_client = boto3.client('elasticbeanstalk')
 autoscaling_client = boto3.client('autoscaling')
@@ -46,7 +47,7 @@ def __create_alarms(scale_up_policy, scale_down_policy):
         Period=60,
         EvaluationPeriods=5,
         Threshold=0,
-        ComparisonOperator="EqualToThreshold",
+        ComparisonOperator="LessThanOrEqualToThreshold",
         Statistic="Maximum"
     )
 
@@ -56,5 +57,8 @@ def main(event, context):
         asg_name = __get_asg_name()
         scale_up_policy, scale_down_policy = __get_scaling_policies(asg_name)
         __create_alarms(scale_up_policy, scale_down_policy)
-    except:
-        pass
+
+        response_data = {}
+        cfnresponse.send(event, context, cfnresponse.SUCCESS, response_data)
+    except Exception as e:
+        print("Unhandled exception raised in bootrap lambda: {}".format(e))
