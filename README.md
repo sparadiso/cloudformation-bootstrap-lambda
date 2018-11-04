@@ -1,5 +1,5 @@
 # Cloudformation with bootstrap lambda
-Prototype example demonstrating how to do last-mile customizations via bootstrap lambda defined in a cloudformation template. The basic approach is to define a custom resource compatible lambda function that takes in information about the created resources (beanstalk env name, e.g) in order to find those resources via boto3 and apply any customized configurations. The example used here is to apply a custom scale-up/down policy that triggers on an SQS metric, which is not available from beanstalk out of the box.
+Prototype example demonstrating how to do last-mile customizations via bootstrap lambda defined in a cloudformation template. The basic approach is to define a custom resource compatible lambda function that takes in information about the created resources (beanstalk env name, e.g) in order to find those resources through the aws API and apply any custom configurations. The example applies a custom scale-up/down policy that triggers on an SQS metric (available messages), which is not available from beanstalk out of the box.
 
 # Requirements
 
