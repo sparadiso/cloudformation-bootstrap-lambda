@@ -10,7 +10,7 @@ Since beanstalk requires a URL for artifacts, you'll need to set up an S3 bucket
 Finally, the deploy script (and cleanup command below) requires the [awscli](https://docs.aws.amazon.com/cli/latest/userguide/installing.html), which can be installed with pip:
 
 ```bash
-?> pip install awscli
+$> pip install awscli
 ```
 
 # Usage
